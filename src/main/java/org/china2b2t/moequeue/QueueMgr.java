@@ -5,6 +5,9 @@
 
 package org.china2b2t.moequeue;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
@@ -27,6 +30,23 @@ public class QueueMgr {
         var add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.prior.max") - Main.cfg.getInt("fake-players.prior.min"))) + Main.cfg.getInt("fake-players.prior.min");
         priorSum += add + 1;
         priorQ.put(player, add);
+    }
+
+    public static void nextPeriod() {
+        var defSet = defQ.keySet();
+        var priorSet = priorQ.keySet();
+
+        for(var i : defSet) {
+            var position = defQ.get(i);
+            position--;
+            if(position.intValue() <= 0) {
+                defQ.remove(i);
+                i.connect(Main.instance.getProxy().getServerInfo(Main.cfg.getString("target")));
+                continue;
+            }
+            defQ.put(i, position);
+            i.sendMessage(ChatMessageType.CHAT, new TextComponent(ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position));
+        }
     }
 
     private static int abs(int i) {

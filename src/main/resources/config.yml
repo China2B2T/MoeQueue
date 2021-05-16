@@ -1,14 +1,17 @@
 # 排队进位时间
 interval: 3
 
+# Targert server
+target: 2b2t
+
 # 玩家入队时自动在前面加入的假人
 fake-players:
   prior:
-    max: 3
-    min: 1
+    max: 1
+    min: 0
   default:
-    max: 15
-    min: 10
+    max: 5
+    min: 3
 
 # 优先队列过期时间戳
 prior-list:

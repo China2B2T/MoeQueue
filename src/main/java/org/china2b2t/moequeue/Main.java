@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Plugin {
     public static Main instance = null;
@@ -44,6 +45,8 @@ public class Main extends Plugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        getProxy().getScheduler().schedule(this, new QueueTask(), 0, 1, TimeUnit.SECONDS)
     }
 
     public static void reloadConfig() throws IOException {
