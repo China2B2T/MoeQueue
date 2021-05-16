@@ -1,0 +1,15 @@
+# 排队进位时间
+interval: 3
+
+# 玩家入队时自动在前面加入的假人
+fake-players:
+  prior:
+    max: 3
+    min: 1
+  default:
+    max: 15
+    min: 10
+
+# 优先队列过期时间戳
+prior-list:
+  Rabbit0w0: 0

@@ -1,0 +1,8 @@
+target
+.idea
+.classpath
+.project
+dependency-reduced-pom.xml
+.gradle
+build
+.DS_Store
