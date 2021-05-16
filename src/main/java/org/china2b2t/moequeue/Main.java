@@ -46,7 +46,7 @@ public class Main extends Plugin {
             e.printStackTrace();
         }
 
-        getProxy().getScheduler().schedule(this, new QueueTask(), 0, 1, TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, new QueueTask(), 0, cfg.getInt("Interval"), TimeUnit.SECONDS);
     }
 
     public static void reloadConfig() throws IOException {
