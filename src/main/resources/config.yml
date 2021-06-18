@@ -3,6 +3,7 @@ interval: 3
 
 # Targert server
 target: 2b2t
+max-players: 300
 
 # 玩家入队时自动在前面加入的假人
 fake-players:

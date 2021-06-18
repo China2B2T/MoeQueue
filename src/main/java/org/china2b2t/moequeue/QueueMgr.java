@@ -36,6 +36,15 @@ public class QueueMgr {
         var defSet = defQ.keySet();
         var priorSet = priorQ.keySet();
 
+        if (
+                Main.instance.getProxy().
+                        getServerInfo(Main.cfg.getString("target")).
+                        getPlayers().
+                        size() >= Main.cfg.getInt("max-players")
+        ) {
+            return;
+        }
+
         for(var i : defSet) {
             var position = defQ.get(i);
             position--;
