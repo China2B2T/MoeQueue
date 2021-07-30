@@ -2,7 +2,7 @@ plugins {
     java
     `maven-publish`
 }
- 
+
 group = "org.china2b2t"
 version = "1.0"
 
@@ -26,9 +26,9 @@ dependencies {
 tasks.withType<ProcessResources> {
     include("**/*.yml")
     filter<org.apache.tools.ant.filters.ReplaceTokens>(
-            "tokens" to mapOf(
-                    "VERSION" to project.version.toString()
-            )
+        "tokens" to mapOf(
+            "VERSION" to project.version.toString()
+        )
     )
 }
 
