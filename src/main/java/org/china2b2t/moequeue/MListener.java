@@ -11,19 +11,23 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.io.IOException;
 
-import static org.china2b2t.moequeue.QueueMgr.addDef;
+import static org.china2b2t.moequeue.QueueMgr.addOffline;
+import static org.china2b2t.moequeue.QueueMgr.addPremium;
 
 public class MListener implements net.md_5.bungee.api.plugin.Listener {
-    @EventHandler
+    @EventHandler(priority = -10)
     public void onPostLogin(PostLoginEvent e) throws IOException {
-        ProxiedPlayer player = e.getPlayer ( );
+        ProxiedPlayer player = e.getPlayer();
 
-
-        String uuid = player.getUniqueId ( ).toString ( );
+        String uuid = player.getUniqueId().toString();
 //        if(Main.cfg.get("prior-list." + playerName) != null && Main.cfg.getLong("prior-list." + playerName) >= System.currentTimeMillis()) {
 //            addPrior(player);
 //            return;
 //        }
-        addDef ( player );
+        if (!player.getPendingConnection().isOnlineMode()) {
+            addOffline(player);
+        } else {
+            addPremium(player);
+        }
     }
 }

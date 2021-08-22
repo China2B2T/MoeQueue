@@ -10,7 +10,10 @@ fake-players:
   prior:
     max: 1
     min: 0
-  default:
+  premium:
+    max: 5
+    min: 3
+  offline:
     max: 5
     min: 3
 

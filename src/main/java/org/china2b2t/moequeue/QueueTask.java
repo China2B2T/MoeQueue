@@ -10,7 +10,7 @@ import java.util.logging.Level;
 public class QueueTask implements Runnable {
     @Override
     public void run() {
-        QueueMgr.nextPeriod ( );
-        Main.instance.getLogger ( ).log ( Level.INFO, "OK" );
+        QueueMgr.nextPeriod();
+        Main.instance.getLogger().log(Level.INFO, "OK");
     }
 }

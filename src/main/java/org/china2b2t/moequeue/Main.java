@@ -23,34 +23,34 @@ public class Main extends Plugin {
 
     @Override
     public void onEnable() {
-        getLogger ( ).log ( Level.INFO, "MoeQueue is now loading~" );
+        getLogger().log(Level.INFO, "MoeQueue is now loading~");
         instance = this;
-        this.getProxy ( ).getPluginManager ( ).registerListener ( this, new MListener ( ) );
-        if (!getDataFolder ( ).exists ( ))
-            getDataFolder ( ).mkdir ( );
+        this.getProxy().getPluginManager().registerListener(this, new MListener());
+        if (!getDataFolder().exists())
+            getDataFolder().mkdir();
 
-        File file = new File ( getDataFolder ( ), "config.yml" );
+        File file = new File(getDataFolder(), "config.yml");
 
-        if (!file.exists ( )) {
-            try (InputStream in = getResourceAsStream ( "config.yml" )) {
-                Files.copy ( in, file.toPath ( ) );
+        if (!file.exists()) {
+            try (InputStream in = getResourceAsStream("config.yml")) {
+                Files.copy(in, file.toPath());
             } catch (IOException e) {
-                e.printStackTrace ( );
+                e.printStackTrace();
             }
         }
 
-        File configPath = Main.instance.getDataFolder ( );
+        File configPath = Main.instance.getDataFolder();
         try {
-            cfg = ConfigurationProvider.getProvider ( YamlConfiguration.class ).load ( new File ( configPath, "config.yml" ) );
+            cfg = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(configPath, "config.yml"));
         } catch (IOException e) {
-            e.printStackTrace ( );
+            e.printStackTrace();
         }
 
-        getProxy ( ).getScheduler ( ).schedule ( this, new QueueTask ( ), 1, cfg.getInt ( "interval" ), TimeUnit.SECONDS );
+        getProxy().getScheduler().schedule(this, new QueueTask(), 1, cfg.getInt("interval"), TimeUnit.SECONDS);
     }
 
     public static void reloadConfig() throws IOException {
-        File configPath = Main.instance.getDataFolder ( );
-        cfg = ConfigurationProvider.getProvider ( YamlConfiguration.class ).load ( new File ( configPath, "config.yml" ) );
+        File configPath = Main.instance.getDataFolder();
+        cfg = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(configPath, "config.yml"));
     }
 }

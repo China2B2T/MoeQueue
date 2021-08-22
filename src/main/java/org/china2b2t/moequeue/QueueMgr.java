@@ -15,71 +15,74 @@ import java.util.Random;
 import java.util.Set;
 
 public class QueueMgr {
-    private static int defSum = 0;
+    private static int premiumSum = 0;
     private static int priorSum = 0;
+    private static int offlineSum = 0;
 
-    private static HashMap<ProxiedPlayer, Integer> defQ = new HashMap<ProxiedPlayer, Integer> ( );
-    private static HashMap<ProxiedPlayer, Integer> priorQ = new HashMap<ProxiedPlayer, Integer> ( );
+    private static HashMap<ProxiedPlayer, Integer> offlineQ = new HashMap<>();
+    private static HashMap<ProxiedPlayer, Integer> premiumQ = new HashMap<>();
+    private static HashMap<ProxiedPlayer, Integer> priorQ = new HashMap<>();
 
-    public static void addDef(ProxiedPlayer player) {
-        int add = new Random ( ).nextInt ( abs ( Main.cfg.getInt ( "fake-players.default.max" ) - Main.cfg.getInt ( "fake-players.default.min" ) ) ) + Main.cfg.getInt ( "fake-players.default.min" );
-        defSum += add + 1;
-        defQ.put ( player, add );
+    public static void addPremium(ProxiedPlayer player) {
+        int add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.premium.max") - Main.cfg.getInt("fake-players.premium.min"))) + Main.cfg.getInt("fake-players.premium.min");
+        premiumSum += add + 1;
+        premiumQ.put(player, add);
+    }
+
+    public static void addOffline(ProxiedPlayer player) {
+        int add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.offline.max") - Main.cfg.getInt("fake-players.prior.min"))) + Main.cfg.getInt("fake-players.offline.min");
+        offlineSum += add + 1;
+        offlineQ.put(player, add);
     }
 
     public static void addPrior(ProxiedPlayer player) {
-        int add = new Random ( ).nextInt ( abs ( Main.cfg.getInt ( "fake-players.prior.max" ) - Main.cfg.getInt ( "fake-players.prior.min" ) ) ) + Main.cfg.getInt ( "fake-players.prior.min" );
+        int add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.prior.max") - Main.cfg.getInt("fake-players.prior.min"))) + Main.cfg.getInt("fake-players.prior.min");
         priorSum += add + 1;
-        priorQ.put ( player, add );
+        priorQ.put(player, add);
     }
 
     public static void nextPeriod() {
-        Set<ProxiedPlayer> defSet = defQ.keySet ( );
-        Set<ProxiedPlayer> priorSet = priorQ.keySet ( );
+        Set<ProxiedPlayer> premiumSet = premiumQ.keySet();
+        Set<ProxiedPlayer> priorSet = priorQ.keySet();
+        Set<ProxiedPlayer> offlineSet = offlineQ.keySet();
 
-        if (defSet.isEmpty ( )) {
-            return;
-        }
-
-        if (Main.instance.getProxy ( ).getServers ( ).containsKey ( Main.cfg.getString ( "target" ) )) {
+        if (Main.instance.getProxy().getServers().containsKey(Main.cfg.getString("target"))) {
             if (
-                    Main.instance.getProxy ( ).
-                            getServerInfo ( Main.cfg.getString ( "target" ) ).
-                            getPlayers ( ).
-                            size ( ) >= Main.cfg.getInt ( "max-players" )
+                    Main.instance.getProxy().
+                            getServerInfo(Main.cfg.getString("target")).
+                            getPlayers().
+                            size() >= Main.cfg.getInt("max-players")
             ) {
                 return;
             }
         }
 
-        for (ProxiedPlayer i : defSet) {
-            int position = defQ.get ( i );
-            position--;
-            if (position <= 0) {
-                defQ.remove ( i );
-                // link(i);
-                i.sendMessage ( ChatMessageType.CHAT, new TextComponent ( "You finished the queue!" ) );
-                continue;
-            }
-            defQ.put ( i, position );
-            i.sendMessage ( ChatMessageType.CHAT, new TextComponent ( ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position ) );
-        }
-
-        if (priorSet.isEmpty ( )) {
-            return;
-        }
-
+        // Prior loop
         for (ProxiedPlayer i : priorSet) {
-            int position = priorQ.get ( i );
+            int position = priorQ.get(i);
             position--;
             if (position <= 0) {
-                defQ.remove ( i );
-                // link(i);
-                i.sendMessage ( ChatMessageType.CHAT, new TextComponent ( "You finished the queue!" ) );
+                premiumQ.remove(i);
+                link(i);
+                // i.sendMessage(ChatMessageType.CHAT, new TextComponent("You finished the queue!"));
                 continue;
             }
-            defQ.put ( i, position );
-            i.sendMessage ( ChatMessageType.SYSTEM, new TextComponent ( ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position ) );
+            premiumQ.put(i, position);
+            i.sendMessage(ChatMessageType.SYSTEM, new TextComponent(ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position));
+        }
+
+        // Premium loop
+        for (ProxiedPlayer i : premiumSet) {
+            int position = premiumQ.get(i);
+            position--;
+            if (position <= 0) {
+                premiumQ.remove(i);
+                link(i);
+                // i.sendMessage(ChatMessageType.CHAT, new TextComponent("You finished the queue!"));
+                continue;
+            }
+            premiumQ.put(i, position);
+            i.sendMessage(ChatMessageType.CHAT, new TextComponent(ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position));
         }
     }
 
@@ -88,10 +91,10 @@ public class QueueMgr {
     }
 
     private static void link(ProxiedPlayer p) {
-        if (!Main.instance.getProxy ( ).getServers ( ).containsKey ( Main.cfg.getString ( "target" ) )) {
-            throw new IllegalStateException ( "No target server found." );
+        if (!Main.instance.getProxy().getServers().containsKey(Main.cfg.getString("target"))) {
+            throw new IllegalStateException("No target server found.");
         }
 
-        p.connect ( Main.instance.getProxy ( ).getServerInfo ( Main.cfg.getString ( "target" ) ) );
+        p.connect(Main.instance.getProxy().getServerInfo(Main.cfg.getString("target")));
     }
 }
