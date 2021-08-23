@@ -11,6 +11,6 @@ public class QueueTask implements Runnable {
     @Override
     public void run() {
         QueueMgr.nextPeriod();
-        Main.instance.getLogger().log(Level.INFO, "OK");
+        // Main.instance.getLogger().log(Level.INFO, "OK");
     }
 }

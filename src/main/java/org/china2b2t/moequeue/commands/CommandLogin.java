@@ -24,10 +24,17 @@ public class CommandLogin extends Command {
 
         if (Main.db.hasLoggedIn(player.getUniqueId().toString())) {
             sender.sendMessage(new TextComponent(ChatColor.RED + "You are already logged in."));
+            return;
+        }
+
+        if (!Main.db.hasRegistered(player.getUniqueId().toString())) {
+            sender.sendMessage(new TextComponent(ChatColor.RED + "No account found, please register."));
+            return;
         }
 
         if (args.length != 1) {
             sender.sendMessage(new TextComponent(ChatColor.RED + "Usage: /login <password>"));
+            return;
         }
 
         if (Main.db.login(player.getUniqueId().toString(), args[0])) {

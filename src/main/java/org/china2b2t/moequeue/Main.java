@@ -10,10 +10,13 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.china2b2t.moequeue.commands.CommandLogin;
+import org.china2b2t.moequeue.commands.CommandRegister;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +57,9 @@ public class Main extends Plugin {
             e.printStackTrace();
         }
 
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CommandLogin());
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CommandRegister());
+
         try {
             MongoClient client = null;
 
@@ -80,6 +86,10 @@ public class Main extends Plugin {
         }
 
         getProxy().getScheduler().schedule(this, new QueueTask(), 1, cfg.getInt("interval"), TimeUnit.SECONDS);
+    }
+
+    public void onDisable() {
+        db.disconnect();
     }
 
     public static void reloadConfig() throws IOException {

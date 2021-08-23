@@ -24,7 +24,15 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver
     implementation("org.mongodb:mongo-java-driver:3.12.10")
+}
 
+tasks.jar {
+    from(configurations.runtimeClasspath.get().map {
+        if (it.isDirectory) it else zipTree(it)
+    })
+    val sourcesMain = sourceSets.main.get()
+    sourcesMain.allSource.forEach { println("Added from source: ${it.name}") }
+    from(sourcesMain.output)
 }
 
 tasks.withType<ProcessResources> {

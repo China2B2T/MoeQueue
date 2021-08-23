@@ -24,18 +24,51 @@ public class QueueMgr {
     private static HashMap<ProxiedPlayer, Integer> priorQ = new HashMap<>();
 
     public static void addPremium(ProxiedPlayer player) {
+        if (Main.instance.getProxy().getServers().containsKey(Main.cfg.getString("target"))) {
+            if (
+                    Main.instance.getProxy().
+                            getServerInfo(Main.cfg.getString("target")).
+                            getPlayers().
+                            size() >= Main.cfg.getInt("max-players")
+            ) {
+                link(player);
+            }
+        }
+
         int add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.premium.max") - Main.cfg.getInt("fake-players.premium.min"))) + Main.cfg.getInt("fake-players.premium.min");
         premiumSum += add + 1;
         premiumQ.put(player, add);
     }
 
     public static void addOffline(ProxiedPlayer player) {
+        if (Main.instance.getProxy().getServers().containsKey(Main.cfg.getString("target"))) {
+            if (
+                    Main.instance.getProxy().
+                            getServerInfo(Main.cfg.getString("target")).
+                            getPlayers().
+                            size() >= Main.cfg.getInt("max-players")
+            ) {
+                link(player);
+            }
+        }
+
         int add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.offline.max") - Main.cfg.getInt("fake-players.prior.min"))) + Main.cfg.getInt("fake-players.offline.min");
         offlineSum += add + 1;
         offlineQ.put(player, add);
     }
 
     public static void addPrior(ProxiedPlayer player) {
+        if (Main.instance.getProxy().getServers().containsKey(Main.cfg.getString("target"))) {
+            if (
+                    Main.instance.getProxy().
+                            getServerInfo(Main.cfg.getString("target")).
+                            getPlayers().
+                            size() >= Main.cfg.getInt("max-players")
+            ) {
+                link(player);
+            }
+        }
+
         int add = new Random().nextInt(abs(Main.cfg.getInt("fake-players.prior.max") - Main.cfg.getInt("fake-players.prior.min"))) + Main.cfg.getInt("fake-players.prior.min");
         priorSum += add + 1;
         priorQ.put(player, add);
@@ -62,12 +95,12 @@ public class QueueMgr {
             int position = priorQ.get(i);
             position--;
             if (position <= 0) {
-                premiumQ.remove(i);
+                priorQ.remove(i);
                 link(i);
                 // i.sendMessage(ChatMessageType.CHAT, new TextComponent("You finished the queue!"));
                 continue;
             }
-            premiumQ.put(i, position);
+            priorQ.put(i, position);
             i.sendMessage(ChatMessageType.SYSTEM, new TextComponent(ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position));
         }
 
@@ -82,6 +115,19 @@ public class QueueMgr {
                 continue;
             }
             premiumQ.put(i, position);
+            i.sendMessage(ChatMessageType.CHAT, new TextComponent(ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position));
+        }
+
+        for (ProxiedPlayer i : offlineSet) {
+            int position = offlineQ.get(i);
+            position--;
+            if (position <= 0) {
+                offlineQ.remove(i);
+                link(i);
+                // i.sendMessage(ChatMessageType.CHAT, new TextComponent("You finished the queue!"));
+                continue;
+            }
+            offlineQ.put(i, position);
             i.sendMessage(ChatMessageType.CHAT, new TextComponent(ChatColor.GOLD + "Position in queue: " + ChatColor.BOLD + position));
         }
     }

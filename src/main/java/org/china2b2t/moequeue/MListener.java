@@ -18,6 +18,12 @@ import static org.china2b2t.moequeue.QueueMgr.addOffline;
 import static org.china2b2t.moequeue.QueueMgr.addPremium;
 
 public class MListener implements net.md_5.bungee.api.plugin.Listener {
+    private static boolean containsHanScript(String s) {
+        return s.codePoints().anyMatch(
+                codepoint ->
+                        Character.UnicodeScript.of(codepoint) == Character.UnicodeScript.HAN);
+    }
+
     @EventHandler(priority = -10)
     public void onPostLogin(PostLoginEvent e) throws IOException {
         ProxiedPlayer player = e.getPlayer();
@@ -27,11 +33,12 @@ public class MListener implements net.md_5.bungee.api.plugin.Listener {
 //            addPrior(player);
 //            return;
 //        }
-        if (!player.getPendingConnection().isOnlineMode()) {
-            Main.db.data.put(player.getUniqueId().toString(), true);
-            player.sendMessage(ChatMessageType.SYSTEM, new TextComponent(ChatColor.GOLD + "登录 /login <password> | 注册 /register <password> <retype password>"));
+        if (containsHanScript(player.getPendingConnection().getName())) {
+            Main.db.data.put(player.getUniqueId().toString(), false);
+            player.sendMessage(ChatMessageType.SYSTEM, new TextComponent(ChatColor.GOLD + "Login with /login <password> | Register with /register <password> <retype password>"));
             // addOffline(player);
         } else {
+            Main.db.data.put(player.getUniqueId().toString(), true);
             // Register this player.
             if (!Main.db.hasRegistered(player.getUniqueId().toString())) {
                 Main.db.register(player.getUniqueId().toString());

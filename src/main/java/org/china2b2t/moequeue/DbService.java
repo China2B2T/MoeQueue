@@ -25,7 +25,7 @@ public class DbService {
     public DbService(MongoClient client) {
         MongoDatabase db = client.getDatabase(cfg.getString("database.database"));
 
-        if (db.listCollectionNames().into(new ArrayList<>()).contains(cfg.getString("database.collection"))) {
+        if (!(db.listCollectionNames().into(new ArrayList<>()).contains(cfg.getString("database.collection")))) {
             db.createCollection(cfg.getString("database.collection"));
         }
         this.collection = db.getCollection(cfg.getString("database.collection"));
@@ -159,6 +159,10 @@ public class DbService {
     }
 
     public boolean hasLoggedIn(String uuid) {
-        return data.containsKey(uuid) ? data.get(uuid) : false;
+        return data.getOrDefault(uuid, false);
+    }
+
+    public void disconnect() {
+        client.close();
     }
 }

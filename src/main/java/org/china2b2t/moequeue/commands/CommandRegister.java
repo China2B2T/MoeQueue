@@ -25,10 +25,17 @@ public class CommandRegister extends Command {
 
         if (Main.db.hasLoggedIn(player.getUniqueId().toString())) {
             sender.sendMessage(new TextComponent(ChatColor.RED + "You are already logged in."));
+            return;
+        }
+
+        if (Main.db.hasRegistered(player.getUniqueId().toString())) {
+            sender.sendMessage(new TextComponent(ChatColor.RED + "An account exists, please login throught /login <password>."));
+            return;
         }
 
         if (args.length != 2) {
             sender.sendMessage(new TextComponent(ChatColor.RED + "Usage: /register <password> <retype password>"));
+            return;
         }
 
         if (!args[0].equals(args[1])) {
