@@ -1,3 +1,16 @@
+# MongoDB
+database:
+  address: localhost
+  port: 27017
+  auth: false
+
+  database: china2b2t
+  collection: security
+
+  auth-info:
+    username: admin
+    password: TOPSECRET!!!
+
 # 排队进位时间
 interval: 3
 

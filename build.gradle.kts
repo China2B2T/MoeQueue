@@ -21,6 +21,10 @@ repositories {
 
 dependencies {
     compileOnly("net.md-5:bungeecord-api:1.14-SNAPSHOT")
+
+    // https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver
+    implementation("org.mongodb:mongo-java-driver:3.12.10")
+
 }
 
 tasks.withType<ProcessResources> {
