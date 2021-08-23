@@ -10,10 +10,7 @@ import org.bson.Document;
 import org.china2b2t.moequeue.crypto.Cipher;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.china2b2t.moequeue.Main.cfg;
@@ -21,7 +18,9 @@ import static org.china2b2t.moequeue.Main.cfg;
 public class DbService {
     private MongoClient client;
     private MongoDatabase db;
-    private MongoCollection<Document> collection;
+    private final MongoCollection<Document> collection;
+
+    public Hashtable<String, Boolean> data = new Hashtable<>();
 
     public DbService(MongoClient client) {
         MongoDatabase db = client.getDatabase(cfg.getString("database.database"));
@@ -76,27 +75,90 @@ public class DbService {
      * @param password password
      */
     public void register(String uuid, String password) {
+        if (hasRegistered(uuid)) {
+            return;
+        }
+
         Cipher cipher = new Cipher();
         Random r = new Random();
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         String type = String.format("%d", r.nextInt(8));
         String registerDate = dataFormat.format(new Date());
-        String lastSeen = registerDate;
+        // String lastSeen = registerDate;
         String hashed = cipher.newHash(password, type);
 
         Document document = new Document("uuid", uuid);
         document.append("register-date", registerDate);
-        document.append("last-seen", lastSeen);
+        // document.append("last-seen", lastSeen);
+        document.append("hash-type", type);
         document.append("password", hashed);
 
-        List<Document> docs = new ArrayList<>();
-        docs.add(document);
+        this.collection.insertOne(document);
+    }
 
-        this.collection.insertMany(docs);
+    /**
+     * register for a premium player
+     *
+     * @param uuid uuid of the player
+     */
+    public void register(String uuid) {
+        if (hasRegistered(uuid)) {
+            return;
+        }
+
+        Cipher cipher = new Cipher();
+        Random r = new Random();
+        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        String type = String.format("%d", r.nextInt(8));
+        String registerDate = dataFormat.format(new Date());
+        // String lastSeen = registerDate;
+        // String hashed = cipher.newHash(password, type);
+
+        Document document = new Document("uuid", uuid);
+        document.append("register-date", registerDate);
+        // document.append("last-seen", lastSeen);
+        // document.append("password", hashed);
+
+        this.collection.insertOne(document);
     }
 
     public void changePassword(String uuid, String password) {
         // TODO Finish this
+    }
+
+    /**
+     * Attempt logging in
+     *
+     * @param uuid uuid of the player
+     * @param password received password
+     * @return succeed or not
+     */
+    public boolean login(String uuid, String password) {
+        Cipher cipher = new Cipher();
+
+        if (!hasRegistered(uuid)) {
+            return false;
+        }
+
+        // Get hash type
+        AtomicReference<String> hashType = new AtomicReference<>();
+
+        FindIterable<Document> iterable = this.collection.find(Filters.eq("uuid", uuid));
+        iterable.forEach((Block<Document>) document -> {
+            hashType.set(document.getString("hash-type"));
+        });
+
+        return cipher.checkPassword(password, hashType.get(), uuid);
+    }
+
+    public boolean hasRegistered(String uuid) {
+        FindIterable<Document> iterable = this.collection.find(Filters.eq("uuid", uuid));
+        return iterable.iterator().hasNext();
+    }
+
+    public boolean hasLoggedIn(String uuid) {
+        return data.containsKey(uuid) ? data.get(uuid) : false;
     }
 }

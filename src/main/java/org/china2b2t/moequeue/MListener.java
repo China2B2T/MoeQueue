@@ -5,6 +5,9 @@
 
 package org.china2b2t.moequeue;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.event.EventHandler;
@@ -25,8 +28,14 @@ public class MListener implements net.md_5.bungee.api.plugin.Listener {
 //            return;
 //        }
         if (!player.getPendingConnection().isOnlineMode()) {
-            addOffline(player);
+            Main.db.data.put(player.getUniqueId().toString(), true);
+            player.sendMessage(ChatMessageType.SYSTEM, new TextComponent(ChatColor.GOLD + "登录 /login <password> | 注册 /register <password> <retype password>"));
+            // addOffline(player);
         } else {
+            // Register this player.
+            if (!Main.db.hasRegistered(player.getUniqueId().toString())) {
+                Main.db.register(player.getUniqueId().toString());
+            }
             addPremium(player);
         }
     }
