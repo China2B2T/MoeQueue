@@ -33,6 +33,11 @@ public class MListener implements net.md_5.bungee.api.plugin.Listener {
 //            addPrior(player);
 //            return;
 //        }
+        if (player.getServer().getInfo().getName().equals(Main.cfg.getString("target"))) {
+            player.disconnect(new TextComponent(ChatColor.GOLD + "Internal error."));
+            return;
+        }
+
         if (containsHanScript(player.getPendingConnection().getName())) {
             Main.db.data.put(player.getUniqueId().toString(), false);
             player.sendMessage(ChatMessageType.SYSTEM, new TextComponent(ChatColor.GOLD + "Login with /login <password> | Register with /register <password> <retype password>"));
